@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src='https://cdn.rawgit.com/Caged/d3-tip/v0.8.0-alpha.1/index.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="top-row">
+        <svg width="1000" height="500" id="usmap"></svg>
+        <div id="filter-form">
+            <h3>Select Import/Export</h3>
+            <p>
+                <input type="radio" id="import" class="radio-buttons radio-buttons-1" name="radio-group-1" checked>
+                <label for="import">Import</label>
+            </p>
+            <p>
+                <input type="radio" id="export" class="radio-buttons radio-buttons-1" name="radio-group-1">
+                <label for="export">Export</label>
+            </p>
+
+            <h3>Select Year</h3>
+            <p>
+                <input type="radio" id="2015" class="radio-buttons radio-buttons-2" name="radio-group-2" checked>
+                <label for="2015">2015</label>
+            </p>
+            <p>
+                <input type="radio" id="2016" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <label for="2016">2016</label>
+            </p>
+            <p>
+                <input type="radio" id="2017" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <label for="2017">2017</label>
+            </p>
+            <p>
+                <input type="radio" id="2018" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <label for="2018">2018</label>
+            </p>
+        </div>
+    </div>
+    <div id="bottom-row">
+        <div id="chart1">
+            Chart 1
+        </div>
+        <div id="chart2">
+            Chart 2
+        </div>
+        <div id="chart3">
+            Chart 3
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        let width = 1000;
+        let height = 500;
+
+        let lowColor = '#F9EAD4'
+        let highColor = '#D12175'
+
+        let selectedState = "";
+
+        let tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+        let projection = d3.geoAlbersUsa().translate([width / 2, height / 2]).scale([1000]);
+        let path = d3.geoPath().projection(projection);
+
+        let usmap = d3.select("#usmap");
+
+        function setMap(trade, year) {
+            d3.csv("data/" + trade + ".csv", function (data) {
+                let dataArray = [];
+                for (let d = 0; d < data.length; d++) {
+                    if (data[d]["countryid"] == "World") {
+                        dataArray.push({
+                            state: data[d]["statename"],
+                            value: parseFloat(data[d][year])
+                        })
+                    }
+                }
+                let minVal = Math.min.apply(Math, dataArray.map(function (o) {
+                    return o.value;
+                }))
+                let maxVal = Math.max.apply(Math, dataArray.map(function (o) {
+                    return o.value;
+                }))
+
+                let ramp = d3.scaleLinear().domain([minVal, maxVal]).range([lowColor, highColor])
+
+                d3.json("data/us-states.json", function (json) {
+
+                    for (let i = 0; i < dataArray.length; i++) {
+
+                        let dataState = dataArray[i].state;
+                        let dataValue = dataArray[i].value;
+                        for (let j = 0; j < json.features.length; j++) {
+                            let jsonState = json.features[j].properties.name;
+                            if (dataState == jsonState) {
+                                json.features[j].properties.value = dataValue;
+                                break;
+                            }
+                        }
+                    }
+
+                    usmap.selectAll("path")
+                        .data(json.features)
+                        .enter()
+                        .append("path")
+                        .attr("class", "state")
+                        .attr("d", path)
+                        .style("stroke", "#000")
+                        .style("stroke-width", "1")
+                        .style("fill", function (d) {
+                            return ramp(d.properties.value)
+                        })
+                        .on("click", function (d) {
+                            selectedState = d.properties.name;
+                            stateToCountryGraph();
+                            top5Graph();
+                            importsExportsGraph();
+                        })
+                        .on("mouseover", function (d) {
+                            tooltip.transition().duration(200).style("opacity", 1);
+                            tooltip.html(d.properties.name).style("left", (d3.event.pageX +
+                                    20) + "px")
+                                .style("top", (d3.event.pageY - 50) + "px");
+                        }).on("mouseout", function (d) {
+                            tooltip.transition().duration(500).style("opacity", 0);
+                        })
+
+
+
+                    usmap.append("g")
+                        .attr("class", "states-names")
+                        .selectAll("text")
+                        .data(json.features)
+                        .enter()
+                        .append("svg:text")
+                        .text(function (d) {
+                            return d.properties.id;
+                        })
+                        .attr("font-size", "8px")
+                        .attr("x", function (d) {
+                            return path.centroid(d)[0];
+                        })
+                        .attr("y", function (d) {
+                            return path.centroid(d)[1];
+                        })
+                        .attr("text-anchor", "middle")
+                        .attr('fill', '#000');
+
+                });
+                // add a legend
+                var w = 140,
+                    h = 300;
+
+                var key = d3.select("body")
+                    .append("svg")
+                    .attr("width", w)
+                    .attr("height", h)
+                    .attr("class", "legend");
+
+                var legend = key.append("defs")
+                    .append("svg:linearGradient")
+                    .attr("id", "gradient")
+                    .attr("x1", "100%")
+                    .attr("y1", "0%")
+                    .attr("x2", "100%")
+                    .attr("y2", "100%")
+                    .attr("spreadMethod", "pad");
+
+                legend.append("stop")
+                    .attr("offset", "0%")
+                    .attr("stop-color", highColor)
+                    .attr("stop-opacity", 1);
+
+                legend.append("stop")
+                    .attr("offset", "100%")
+                    .attr("stop-color", lowColor)
+                    .attr("stop-opacity", 1);
+
+                key.append("rect")
+                    .attr("width", w - 100)
+                    .attr("height", h)
+                    .style("fill", "url(#gradient)")
+                    .attr("transform", "translate(0,10)");
+
+                var y = d3.scaleLinear()
+                    .range([h, 0])
+                    .domain([minVal, maxVal]);
+
+                var yAxis = d3.axisRight(y);
+
+                key.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(41,10)")
+                    .call(yAxis)
+            });
+        }
+
+        setMap("imctyall", "val2015");
+
+
+        $('.radio-buttons').on('change', function () {
+            let trade = $('.radio-buttons-1:checked').attr("id").trim();
+            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+            let filename = "";
+
+            if (trade == "export") {
+                filename = "exctyall";
+            } else {
+                filename = "imctyall";
+            }
+            clearAll();
+            setMap(filename, year);
+
+        });
+
+
+        function stateToCountryGraph() {
+            let state = selectedState;
+            let trade = $('.radio-buttons-1:checked').attr("id").trim();
+            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+            let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
+            let filename = "";
+            let dataArr = [];
+            if (trade == "export") {
+                filename = "exctyall.csv";
+            } else {
+                filename = "imctyall.csv";
+            }
+
+            d3.csv("data/" + filename, function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].statename == state && data[i].rank != "0") {
+                        dataArr.push({
+                            country: data[i].countryid,
+                            value: parseFloat(data[i][year])
+                        })
+                    }
+                }
+                // console.log(dataArr)
+                //Has data for building the graphs
+                //A horizontal bar graph should be used to accomodate all the 25 countries
+            })
+
+        }
+
+
+        function top5Graph() {
+            let state = selectedState;
+            let trade = $('.radio-buttons-1:checked').attr("id").trim();
+            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+            let title = "Top 5 " + trade + "s from " + state + " in " + year.substring(3);
+            let filename = "";
+            let dataArr = [];
+            if (trade == "export") {
+                filename = "exstall.csv";
+            } else {
+                filename = "imstall.csv";
+            }
+
+            d3.csv("data/" + filename, function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].statename == state && data[i].rank != "0") {
+                        dataArr.push({
+                            item: data[i].abbrevation,
+                            value: parseFloat(data[i][year])
+                        })
+                    }
+                }
+                dataArr = dataArr.sort((a, b) => b.value - a.value).slice(0, 5);
+                // console.log(dataArr)
+                //A piechart or donut chart can be used to show the 5 different commodities
+            })
+        }
+
+
+        function importsExportsGraph() {
+            let dataArr = [];
+            let state = selectedState;
+            let title = "Imports and exports from " + state + " to world";
+            d3.csv("data/exctyall.csv", function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].statename == state && data[i].countryid == "World") {
+                        dataArr.push({
+                            trade: "export",
+                            year: "2015",
+                            value: parseFloat(data[i]["val2015"])
+                        })
+                        dataArr.push({
+                            trade: "export",
+                            year: "2016",
+                            value: parseFloat(data[i]["val2016"])
+                        })
+                        dataArr.push({
+                            trade: "export",
+                            year: "2017",
+                            value: parseFloat(data[i]["val2017"])
+                        })
+                        dataArr.push({
+                            trade: "export",
+                            year: "2018",
+                            value: parseFloat(data[i]["val2018"])
+                        })
+                        break;
+                    }
+                }
+
+                d3.csv("data/imctyall.csv", function (data) {
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].statename == state && data[i].countryid == "World") {
+                            dataArr.push({
+                                trade: "import",
+                                year: "2015",
+                                value: parseFloat(data[i]["val2015"])
+                            })
+                            dataArr.push({
+                                trade: "import",
+                                year: "2016",
+                                value: parseFloat(data[i]["val2016"])
+                            })
+                            dataArr.push({
+                                trade: "import",
+                                year: "2017",
+                                value: parseFloat(data[i]["val2017"])
+                            })
+                            dataArr.push({
+                                trade: "import",
+                                year: "2018",
+                                value: parseFloat(data[i]["val2018"])
+                            })
+                            break;
+                        }
+                    }
+                })
+
+
+                console.log(dataArr[1])
+                //A vertical bar graphs should be used
+            })
+        }
+
+        function clearAll() {
+
+            // console.log(selectedState);
+            // console.log($('.radio-buttons-1:checked').attr("id").trim());
+            // console.log($('.radio-buttons-2:checked').attr("id").trim());
+
+            d3.selectAll("#usmap > *").remove();
+            d3.selectAll(".legend").remove();
+            // Keep adding graphs as proceeded
+        }
+    </script>
+</body>
+
+</html>
