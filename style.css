@@ -110,5 +110,57 @@ div.tooltip {
 }
 
 #bottom-row div {
-    width: 30%;
+    width: 1000;
 }
+
+/* Ganesh */
+
+.subtitle {
+    font-size: 20px;
+    text-align: center;
+  }
+
+/* legend */
+.legend {
+    font-size: 14px;
+  }
+  rect {
+    cursor: pointer; 
+    stroke-width: 2;
+  }
+  rect.disabled {
+    fill: transparent !important;
+  }
+  
+  /* chart */
+  #pie-chart {
+    height: 380px;
+    width: 450px;
+    margin: 0 auto;
+    position: relative;
+    display: block;
+    align-items: center;
+  }
+  
+  /* tooltip */
+  #pie-chart div.tooltip {
+    background: #FFF;
+    border: 1px solid #DFDFDF;
+    box-shadow: 0 0 5px #999999;
+    color: #333;
+    display: none;
+    font-size: 11px;
+    left: 130px;
+    padding: 10px;
+    position: absolute;
+    text-align: center;
+    top: 95px;
+    width: 80px;
+    z-index: 10;
+  }
+  
+  .footer {
+    padding-top: 50px;
+    text-align: center;
+    list-style-type: none;
+  }
