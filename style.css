@@ -181,3 +181,5 @@ div.tooltip {
       position: relative;
       top:16px;
   }
+
+  .bar { fill: steelblue; }
