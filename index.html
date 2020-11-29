@@ -47,8 +47,7 @@
         <p id = "regionTitle" ></p>
     </div>
     <div id="bottom-row">
-        <div>
-            Chart 1
+        <div id="bar-chart1">
         </div>
         
         <div id = "pie-chart">
@@ -123,6 +122,7 @@
                         })
                         .on("click", function (d) {
                             selectedState = d.properties.name;
+                            d3.select("#bar-chart1").selectAll("svg").remove();
                             stateToCountryGraph();
                             
                             d3.select("#pie-chart").selectAll("svg").remove(); // removing the previous pie charts if present any
@@ -251,9 +251,79 @@
                     }
                 }
                 console.log(dataArr)
-                //Has data for building the graphs
-                //A horizontal bar graph should be used to accomodate all the 25 countries
+
+                dataArr = dataArr.sort(function (a, b) {
+                    return d3.ascending(a.value, b.value);
+                })
+            var margin = {top: 20, right: 10, bottom: 30, left: 90},
+                        width = 500 - margin.left - margin.right,
+                        height = 300 - margin.top - margin.bottom;
+            var y = d3.scaleBand()
+                    .range([height, 0])
+                    .padding(0.1);
+
+            var x = d3.scaleLinear()
+                    .range([0, width]);
+                              
+            var svg = d3.select("#bar-chart1").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            dataArr.forEach(function(d) {
+                d.value = +d.value;
+            });
+                
+                x.domain([0, d3.max(dataArr, function(d){ return d.value; })])
+                y.domain(dataArr.map(function(d) { return d.country; }));
+                  
+                var tooltip = d3.select('#bar-chart1') // select element in the DOM with id 'chart'
+                .append('div') // append a div element to the element we've selected                                    
+                .attr('class', 'tooltip'); // add class 'tooltip' on the divs we just selected
+
+                tooltip.append('div') // add divs to the tooltip defined above                            
+                .attr('class', 'country'); 
+                
+                tooltip.append('div') // add divs to the tooltip defined above                     
+                .attr('class', 'value');
+
+                svg.selectAll(".bar")
+                    .data(dataArr)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    //.attr("x", function(d) { return x(d.sales); })
+                    .attr("width", function(d) {return x(d.value); } )
+                    .attr("y", function(d) { return y(d.country); })
+                    .attr("height", y.bandwidth())
+                    .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("display", "inline-block")
+              .html((d.country) + "<br>" + "$" + (d.value));
+        })
+    		.on("mouseout", function(d){ tooltip.style("display", "none");});
+                
+                        //add a value label to the right of each bar
+                 // add the x Axis
+                svg.append("g")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(x));
+
+                // add the y Axis
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+
+
+
+
+                
+
+                
+
             })
+
 
         }
 
