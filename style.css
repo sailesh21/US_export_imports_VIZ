@@ -134,12 +134,13 @@ div.tooltip {
   
   /* chart */
   #pie-chart {
-    height: 380px;
-    width: 450px;
+    height: 300px;
+    width: 500px;
     margin: 0 auto;
     position: relative;
     display: block;
     align-items: center;
+    /* border: 1px solid black; */
   }
   
   /* tooltip */
@@ -176,7 +177,7 @@ div.tooltip {
   }
   .titleHolder p{
       font-size: 18px;
-      letter-spacing: 0.08rem;
+      letter-spacing: 0.07rem;
       position: relative;
       top:16px;
   }
