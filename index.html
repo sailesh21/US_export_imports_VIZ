@@ -123,18 +123,19 @@
                             selectedState = d.properties.name;
                             d3.select("#bar-chart1").selectAll("svg").remove();
                             if (trade == "exctyall") {
-                                stateToCountryGraph("export",year);
+                                stateToCountryGraph("export", year);
                             } else {
-                                stateToCountryGraph("import",year);
+                                stateToCountryGraph("import", year);
                             }
-                            
-                            d3.select("#pie-chart").selectAll("svg").remove(); // removing the previous pie charts if present any
+
+                            d3.select("#pie-chart").selectAll("svg")
+                                .remove(); // removing the previous pie charts if present any
                             if (trade == "exctyall") {
-                                top5Graph("export",year);
+                                top5Graph("export", year);
                             } else {
-                                top5Graph("import",year);
+                                top5Graph("import", year);
                             }
-                            
+
                             d3.select("#bar-chart2").selectAll("svg").remove();
                             importsExportsGraph();
                         })
@@ -233,16 +234,16 @@
             clearAll();
             setMap(filename, year);
 
-            d3.select("#bar-chart1").selectAll("svg").remove();
-            stateToCountryGraph(trade,year);
+            stateToCountryGraph(trade, year);
 
-            d3.select("#pie-chart").selectAll("svg").remove();
-            top5Graph(trade,year);
+            top5Graph(trade, year);
+
+            importsExportsGraph();
 
         });
 
 
-        function stateToCountryGraph(trade,year) {
+        function stateToCountryGraph(trade, year) {
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
@@ -351,7 +352,7 @@
         }
 
 
-        function top5Graph(trade,year) {
+        function top5Graph(trade, year) {
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
@@ -630,84 +631,99 @@
                     })
                 }, 200)
                 setTimeout(() => {
-                    drawimportsExportsGraph();
+                    if (dataArr.length > 1) {
+                        drawimportsExportsGraph();
 
-                    function drawimportsExportsGraph() {
+                        function drawimportsExportsGraph() {
 
-                        var trade = $('.radio-buttons-1:checked').attr("id").trim();
-                        let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-                        var dataArr1 = [];
-                        for (let i = 0; i < dataArr.length; i++) {
-                            if (dataArr[i].trade == trade) {
-                                dataArr1.push({
-                                    year: dataArr[i].year,
-                                    value: dataArr[i].value
-
-                                })
+                            var trade = $('.radio-buttons-1:checked').attr("id").trim();
+                            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+                            var dataArr1 = [];
+                            for (let i = 0; i < dataArr.length; i++) {
+                                if (dataArr[i].trade == trade) {
+                                    dataArr1.push({
+                                        year: dataArr[i].year,
+                                        value: dataArr[i].value
+                                    })
+                                }
                             }
-                        }
-                        console.log(dataArr1);
-                        var margin = {
-                                top: 20,
-                                right: 10,
-                                bottom: 30,
-                                left: 90
-                            },
-                            width = 500 - margin.left - margin.right,
-                            height = 300 - margin.top - margin.bottom;
-
-
-                        var x = d3.scaleBand()
-                            .range([0, width])
-                            .padding(0.1);
-                        var y = d3.scaleLinear()
-                            .range([height, 0]);
-
-
-                        var svg = d3.select("#bar-chart2").append("svg")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.top + margin.bottom)
-                            .append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                        dataArr1.forEach(function (d) {
-                            d.value = +d.value;
-                        });
-
-                        y.domain([0, d3.max(dataArr1, function (d) {
-                            return d.value;
-                        })])
-                        x.domain(dataArr1.map(function (d) {
-                            return d.year;
-                        }));
-
-
-                        svg.selectAll(".bar")
-                            .data(dataArr1)
-                            .enter().append("rect")
-                            .attr("class", "bar")
-                            .attr("x", function (d) {
-                                return x(d.year);
-                            })
-                            .attr("width", x.bandwidth())
-                            .attr("y", function (d) {
-                                return y(d.value);
-                            })
-                            .attr("height", function (d) {
-                                return height - y(d.value);
+                            // console.log(dataArr1);
+                            var margin = {
+                                    top: 20,
+                                    right: 10,
+                                    bottom: 30,
+                                    left: 90
+                                },
+                                width = 500 - margin.left - margin.right,
+                                height = 300 - margin.top -
+                                margin.bottom;
+                            var x = d3.scaleBand().range([0, width]).padding(0.1);
+                            var y = d3.scaleLinear()
+                                .range([height, 0]);
+                            var svg = d3.select("#bar-chart2")
+                                .append("svg")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.top + margin.bottom)
+                                .append("g")
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                            dataArr1.forEach(function (d) {
+                                d.value = +d.value;
                             });
+                            y.domain([0, d3.max(dataArr1, function (d) {
+                                return d.value;
+                            })]);
+                            x.domain(dataArr1.map(function (d) {
+                                return d.year;
+                            }));
+                            var tooltip = d3.select(
+                                    '#bar-chart2') // select element in the DOM with id 'chart'
+                                .append('div') // append a div element to the element we've selected
+                                .attr('class',
+                                    'tooltip'); // add class 'tooltip' on the divs we just selected
 
-                        //add a value label to the right of each bar
-                        // add the x Axis
-                        svg.append("g")
-                            .attr("transform", "translate(0," + height + ")")
-                            .call(d3.axisBottom(x));
+                            tooltip.append('div') // add divs to the tooltip defined above
+                                .attr('class', 'state');
 
-                        // add the y Axis
-                        svg.append("g")
-                            .call(d3.axisLeft(y));
+                            tooltip.append('div') // add divs to the tooltip defined above
+                                .attr('class', 'trade');
+                            tooltip.append('div') // add divs to the tooltip defined above
+                                .attr('class', 'year');
+                            tooltip.append('div') // add divs to the tooltip defined above
+                                .attr('class', 'value');
+
+                            svg.selectAll(".bar")
+                                .data(dataArr1)
+                                .enter().append("rect")
+                                .attr("class", "bar")
+                                .attr("x", function (d) {
+                                    return x(d.year);
+                                })
+                                .attr("width", x.bandwidth())
+                                .attr("y", function (d) {
+                                    return y(d.value);
+                                })
+                                .attr("height", function (d) {
+                                    return height - y(d.value);
+                                })
+                                .on("mousemove", function (d) {
+                                    tooltip
+                                        .style("left", d3.event.pageX - 50 + "px")
+                                        .style("top", d3.event.pageY - 70 + "px")
+                                        .style("display", "inline-block")
+                                        .html((state) + "<br>" + (trade) + "<br>" + (d.year) +
+                                            "<br>" + "$" +
+                                            (d.value));
+                                })
+                                .on("mouseout", function (d) {
+                                    tooltip.style("display", "none");
+                                });
+                            svg.append("g")
+                                .attr("transform", "translate(0," + height + ")")
+                                .call(d3.axisBottom(x)); // add the y Axis 
+                            svg.append("g").call(d3.axisLeft(y));
+                        };
                     };
                 }, 300)
-
             })
         }
 
@@ -719,6 +735,9 @@
 
             d3.selectAll("#usmap > *").remove();
             d3.selectAll(".legend").remove();
+            d3.select("#bar-chart1").selectAll("svg").remove();
+            d3.select("#pie-chart").selectAll("svg").remove();
+            d3.select("#bar-chart2").selectAll("svg").remove();
             // Keep adding graphs as proceeded
         }
     </script>
