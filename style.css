@@ -118,68 +118,87 @@ div.tooltip {
 .subtitle {
     font-size: 20px;
     text-align: center;
-  }
+}
 
 /* legend */
 .legend {
     font-size: 14px;
-  }
-  rect {
-    cursor: pointer; 
+}
+
+rect {
+    cursor: pointer;
     stroke-width: 2;
-  }
-  rect.disabled {
+}
+
+rect.disabled {
     fill: transparent !important;
-  }
-  
-  /* chart */
-  #pie-chart {
-    height: 300px;
-    width: 500px;
+}
+
+/* Bar Chart 1 */
+#bar-chart1 {
+    height: 350px;
+    width: 550px;
+    /* border: 1px solid black; */
+}
+
+/* Bar Chart 2 */
+#bar-chart2 {
+    height: 350px;
+    width: 550px;
+    /* border: 1px solid black; */
+}
+
+/* chart */
+#pie-chart {
+    height: 350px;
+    width: 550px;
     margin: 0 auto;
     position: relative;
     display: block;
     align-items: center;
     /* border: 1px solid black; */
-  }
-  
-  /* tooltip */
-  #pie-chart div.tooltip {
+}
+
+/* tooltip */
+#pie-chart div.tooltip {
     background: #FFF;
     border: 1px solid #DFDFDF;
     box-shadow: 0 0 5px #999999;
     color: #333;
     display: none;
     font-size: 11px;
-    left: 130px;
+    /* left: 130px; */
     padding: 10px;
     position: absolute;
     text-align: center;
     top: 95px;
     width: 80px;
     z-index: 10;
-  }
-  
-  .footer {
+}
+
+.footer {
     padding-top: 50px;
     text-align: center;
     list-style-type: none;
-  }
+}
 
-  /* title holder div */
-  .titleHolder{
-      width: 100vw;
-      height: 40px;
-      /* border: 1px solid black; */
-      display: flex;
-      justify-content: center;
-      position: absolute;
-  }
-  .titleHolder p{
-      font-size: 18px;
-      letter-spacing: 0.07rem;
-      position: relative;
-      top:16px;
-  }
+/* title holder div */
+.titleHolder {
+    width: 100vw;
+    height: 40px;
+    /* border: 1px solid black; */
+    display: flex;
+    justify-content: center;
+    position: absolute;
+}
 
-  .bar { fill: steelblue; }
+.titleHolder p {
+    font-size: 18px;
+    letter-spacing: 0.07rem;
+    position: relative;
+    top: 16px;
+}
+
+.bar {
+    fill: steelblue;
+}
