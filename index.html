@@ -122,12 +122,20 @@
                         .on("click", function (d) {
                             selectedState = d.properties.name;
                             d3.select("#bar-chart1").selectAll("svg").remove();
-                            stateToCountryGraph();
-                            d3.select("#pie-chart").selectAll("svg")
-                                .remove(); // removing the previous pie charts if present any
-                            top5Graph();
+                            if (trade == "exctyall") {
+                                stateToCountryGraph("export",year);
+                            } else {
+                                stateToCountryGraph("import",year);
+                            }
+                            
+                            d3.select("#pie-chart").selectAll("svg").remove(); // removing the previous pie charts if present any
+                            if (trade == "exctyall") {
+                                top5Graph("export",year);
+                            } else {
+                                top5Graph("import",year);
+                            }
+                            
                             d3.select("#bar-chart2").selectAll("svg").remove();
-
                             importsExportsGraph();
                         })
                         .on("mouseover", function (d) {
@@ -225,13 +233,19 @@
             clearAll();
             setMap(filename, year);
 
+            d3.select("#bar-chart1").selectAll("svg").remove();
+            stateToCountryGraph(trade,year);
+
+            d3.select("#pie-chart").selectAll("svg").remove();
+            top5Graph(trade,year);
+
         });
 
 
-        function stateToCountryGraph() {
+        function stateToCountryGraph(trade,year) {
             let state = selectedState;
-            let trade = $('.radio-buttons-1:checked').attr("id").trim();
-            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+            //let trade = $('.radio-buttons-1:checked').attr("id").trim();
+            //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
             let filename = "";
             let dataArr = [];
@@ -337,10 +351,10 @@
         }
 
 
-        function top5Graph() {
+        function top5Graph(trade,year) {
             let state = selectedState;
-            let trade = $('.radio-buttons-1:checked').attr("id").trim();
-            let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+            //let trade = $('.radio-buttons-1:checked').attr("id").trim();
+            //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             let title = "Top 5 " + trade + "s from " + state + " in " + year.substring(3);
             let filename = "";
             let dataArr = [];
