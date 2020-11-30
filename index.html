@@ -306,7 +306,8 @@
                     .append(
                         'div'
                     ) // append a div element to the element we've selected                                    
-                    .attr('class', 'tooltip'); // add class 'tooltip' on the divs we just selected
+                    .attr('class', 'tooltip')
+                    .style('opacity', 0); // add class 'tooltip' on the divs we just selected
 
                 tooltip.append('div') // add divs to the tooltip defined above                            
                     .attr('class', 'country');
@@ -331,10 +332,13 @@
                             .style("left", d3.event.pageX - 50 + "px")
                             .style("top", d3.event.pageY - 70 + "px")
                             .style("display", "inline-block")
+                            .style('opacity', 1)
                             .html((d.country) + "<br>" + "$" + (d.value));
                     })
                     .on("mouseout", function (d) {
                         tooltip.style("display", "none");
+                        d3.selectAll("#tooltip").remove();
+
                     });
 
                 //add a value label to the right of each bar
@@ -679,7 +683,9 @@
                                     '#bar-chart2') // select element in the DOM with id 'chart'
                                 .append('div') // append a div element to the element we've selected
                                 .attr('class',
-                                    'tooltip'); // add class 'tooltip' on the divs we just selected
+                                    'tooltip')
+                                .style("opacity",
+                                    0); // add class 'tooltip' on the divs we just selected
 
                             tooltip.append('div') // add divs to the tooltip defined above
                                 .attr('class', 'state');
@@ -710,12 +716,14 @@
                                         .style("left", d3.event.pageX - 50 + "px")
                                         .style("top", d3.event.pageY - 70 + "px")
                                         .style("display", "inline-block")
+                                        .style('opacity', 1)
                                         .html((state) + "<br>" + (trade) + "<br>" + (d.year) +
                                             "<br>" + "$" +
                                             (d.value));
                                 })
                                 .on("mouseout", function (d) {
                                     tooltip.style("display", "none");
+
                                 });
                             svg.append("g")
                                 .attr("transform", "translate(0," + height + ")")
@@ -735,6 +743,7 @@
 
             d3.selectAll("#usmap > *").remove();
             d3.selectAll(".legend").remove();
+
             d3.select("#bar-chart1").selectAll("svg").remove();
             d3.select("#pie-chart").selectAll("svg").remove();
             d3.select("#bar-chart2").selectAll("svg").remove();
