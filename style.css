@@ -40,7 +40,7 @@ div.tooltip {
 }
 
 #filter-form {
-    width: calc(100% - 1000px);
+    width: calc((100% - 1000px)/2);
 }
 
 #filter-form h3 {
@@ -123,6 +123,7 @@ div.tooltip {
 /* legend */
 .legend {
     font-size: 14px;
+    width: 130 px;
 }
 
 rect {
@@ -133,6 +134,7 @@ rect {
 rect.disabled {
     fill: transparent !important;
 }
+
 
 /* Bar Chart 1 */
 #bar-chart1 {
