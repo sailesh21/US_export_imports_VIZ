@@ -272,6 +272,8 @@
                 dataArr = dataArr.sort(function (a, b) {
                     return d3.ascending(a.value, b.value);
                 })
+
+                dataArr = dataArr.slice(-10,);
                 var margin = {
                         top: 20,
                         right: 10,
@@ -394,14 +396,14 @@
                 var height = 300;
 
                 // a circle chart needs a radius
-                var radius = Math.min(width, height) / 2;
+                var radius = Math.min(width, height) / 2.5;
 
                 // legend dimensions
                 var legendRectSize = 25; // defines the size of the colored squares in legend
                 var legendSpacing = 6; // defines spacing between squares
 
                 // define color scale
-                var color = d3.scaleOrdinal(['#d7191c', '#fdae61', '#ffffbf', '#abd9e9', '#2c7bb6']);
+                var color = d3.scaleOrdinal(['#b35806','#f1a340','#fee0b6','#d8daeb','#998ec3']);
                 // console.log(color)
 
                 var svg = d3.select('#pie-chart') // select element in the DOM with id 'piechart'
@@ -409,7 +411,7 @@
                     .attr('width', width) // set the width of the svg element we just added
                     .attr('height', height) // set the height of the svg element we just added
                     .append('g') // append 'g' element to the svg element
-                    .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) +
+                    .attr('transform', 'translate(' + (width / 4) + ',' + (height / 2) +
                         ')'
                     ); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
 
@@ -491,76 +493,76 @@
                 });
 
 
-                // // define legend
-                // var legend = svg.selectAll('.legend') // selecting elements with class 'legend'
-                //     .data(['#d7191c', '#fdae61', '#ffffbf', '#abd9e9', '#2c7bb6']) // refers to an array of labels from our dataset
-                //     .enter() // creates placeholder
-                //     .append('g') // replace placeholders with g elements
-                //     .attr('class', 'legend') // each g is given a legend class
-                //     .attr('transform', function (d, i) {
-                //         var height = legendRectSize +
-                //             legendSpacing; // height of element is the height of the colored square plus the spacing      
-                //         var offset = height * color.domain().length /
-                //             2; // vertical offset of the entire legend = height of a single element & half the total number of elements  
-                //         var horz = 18 *
-                //             legendRectSize; // the legend is shifted to the left to make room for the text
-                //         var vert = i * height -
-                //             offset; // the top of the element is hifted up or down from the center using the offset defiend earlier and the index of the current element 'i'               
-                //         return 'translate(' + horz + ',' + vert + ')'; //return translation       
-                //     });
+                // define legend
+                var legend = svg.selectAll('.legend') // selecting elements with class 'legend'
+                    .data(color.domain()) // refers to an array of labels from our dataset
+                    .enter() // creates placeholder
+                    .append('g') // replace placeholders with g elements
+                    .attr('class', 'legend') // each g is given a legend class
+                    .attr('transform', function (d, i) {
+                        var height = legendRectSize +
+                            legendSpacing; // height of element is the height of the colored square plus the spacing      
+                        var offset = height * color.domain().length /
+                            2; // vertical offset of the entire legend = height of a single element & half the total number of elements  
+                        var horz = 6*
+                            legendRectSize; // the legend is shifted to the left to make room for the text
+                        var vert = i * height -
+                            offset; // the top of the element is hifted up or down from the center using the offset defiend earlier and the index of the current element 'i'               
+                        return 'translate(' + horz + ',' + vert + ')'; //return translation       
+                    });
 
-                // // adding colored squares to legend
-                // legend.append('rect') // append rectangle squares to legend                                   
-                //     .attr('width', legendRectSize) // width of rect size is defined above                        
-                //     .attr('height', legendRectSize) // height of rect size is defined above                      
-                //     .style('fill', color) // each fill is passed a color
-                //     .style('stroke', color) // each stroke is passed a color
-                //     .on('click', function (item) {
-                //         var rect = d3.select(this); // this refers to the colored squared just clicked
-                //         var enabled = true; // set enabled true to default
-                //         var totalEnabled = d3.sum(dataArr.map(function (d) { // can't disable all options
-                //             return (d.enabled) ? 1 :
-                //                 0; // return 1 for each enabled entry. and summing it up
-                //         }));
+                // adding colored squares to legend
+                legend.append('rect') // append rectangle squares to legend                                   
+                    .attr('width', legendRectSize) // width of rect size is defined above                        
+                    .attr('height', legendRectSize) // height of rect size is defined above                      
+                    .style('fill', color) // each fill is passed a color
+                    .style('stroke', color) // each stroke is passed a color
+                    .on('click', function (item) {
+                        var rect = d3.select(this); // this refers to the colored squared just clicked
+                        var enabled = true; // set enabled true to default
+                        var totalEnabled = d3.sum(dataArr.map(function (d) { // can't disable all options
+                            return (d.enabled) ? 1 :
+                                0; // return 1 for each enabled entry. and summing it up
+                        }));
 
-                //         if (rect.attr('class') === 'disabled') { // if class is disabled
-                //             rect.attr('class', ''); // remove class disabled
-                //         } else { // else
-                //             if (totalEnabled < 2) return; // if less than two labels are flagged, exit
-                //             rect.attr('class', 'disabled'); // otherwise flag the square disabled
-                //             enabled = false; // set enabled to false
-                //         }
+                        if (rect.attr('class') === 'disabled') { // if class is disabled
+                            rect.attr('class', ''); // remove class disabled
+                        } else { // else
+                            if (totalEnabled < 2) return; // if less than two labels are flagged, exit
+                            rect.attr('class', 'disabled'); // otherwise flag the square disabled
+                            enabled = false; // set enabled to false
+                        }
 
-                //         pie.value(function (d) {
-                //             if (d.item === item) d.enabled =
-                //                 enabled; // if entry label matches legend label
-                //             return (d.enabled) ? d.value :
-                //                 0; // update enabled property and return count or 0 based on the entry's status
-                //         });
+                        pie.value(function (d) {
+                            if (d.item === item) d.enabled =
+                                enabled; // if entry label matches legend label
+                            return (d.enabled) ? d.value :
+                                0; // update enabled property and return count or 0 based on the entry's status
+                        });
 
-                //         path = path.data(pie(dataArr)); // update pie with new data
+                        path = path.data(pie(dataArr)); // update pie with new data
 
-                //         path.transition() // transition of redrawn pie
-                //             .duration(750) // 
-                //             .attrTween('d', function (
-                //                 d) { // 'd' specifies the d attribute that we'll be animating
-                //                 var interpolate = d3.interpolate(this._current,
-                //                     d); // this = current path element
-                //                 this._current = interpolate(
-                //                     0); // interpolate between current value and the new value of 'd'
-                //                 return function (t) {
-                //                     return arc(interpolate(t));
-                //                 };
-                //             });
-                //     });
+                        path.transition() // transition of redrawn pie
+                            .duration(750) // 
+                            .attrTween('d', function (
+                                d) { // 'd' specifies the d attribute that we'll be animating
+                                var interpolate = d3.interpolate(this._current,
+                                    d); // this = current path element
+                                this._current = interpolate(
+                                    0); // interpolate between current value and the new value of 'd'
+                                return function (t) {
+                                    return arc(interpolate(t));
+                                };
+                            });
+                    });
 
-                // // adding text to legend
-                // legend.append('text')
-                //     .attr('x', legendRectSize + legendSpacing)
-                //     .attr('y', legendRectSize - legendSpacing)
-                //     .text(function (d) {
-                //         return d;
-                //     }); // return label
+                // adding text to legend
+                legend.append('text')
+                    .attr('x', legendRectSize + legendSpacing)
+                    .attr('y', legendRectSize - legendSpacing)
+                    .text(function (d) {
+                        return d;
+                    }); // return label
 
 
                 document.getElementById('regionTitle').innerHTML = title;
