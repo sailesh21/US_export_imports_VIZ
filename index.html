@@ -273,7 +273,7 @@
                     return d3.ascending(a.value, b.value);
                 })
 
-                dataArr = dataArr.slice(-10,);
+                dataArr = dataArr.slice(-10);
                 var margin = {
                         top: 20,
                         right: 10,
@@ -345,6 +345,9 @@
 
                     });
 
+
+                    
+
                 //add a value label to the right of each bar
                 // add the x Axis
                 svg.append("g")
@@ -354,6 +357,8 @@
                 // add the y Axis
                 svg.append("g")
                     .call(d3.axisLeft(y));
+                     
+                    
             })
 
 
@@ -364,7 +369,7 @@
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-            let title = "Top 5 " + trade + "s from " + state + " in " + year.substring(3);
+            var title = "Top " + trade + "s from " + state + " in " + year.substring(3);
             let filename = "";
             let dataArr = [];
             if (trade == "export") {
@@ -391,8 +396,7 @@
                 //A piechart  can be used to show the 5 different commodities
 
 
-                // chart dimensions
-                var width = 500;
+                var width = 650;
                 var height = 300;
 
                 // a circle chart needs a radius
@@ -412,8 +416,7 @@
                     .attr('height', height) // set the height of the svg element we just added
                     .append('g') // append 'g' element to the svg element
                     .attr('transform', 'translate(' + (width / 4) + ',' + (height / 2) +
-                        ')'
-                    ); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
+                        ')'); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
 
                 var arc = d3.arc()
                     .innerRadius(0) // none for pie chart
@@ -468,6 +471,8 @@
                         this._current - d;
                     }); // creates a smooth animation for each track
 
+
+
                 // mouse event handlers are attached to path so they need to come after its definition
                 path.on('mouseover', function (d) { // when mouse enters div  
                     var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
@@ -479,7 +484,6 @@
                     tooltip.select('.value').html('$' + d.data.value); // set current count            
                     tooltip.select('.percent').html(percent +'%'); // set percent calculated above          
                     tooltip.style('display', 'block'); // set display                     
-                    // d3.select(this).style("fill", d3.rgb(color(d.value)).darker(2));    
                 });
 
                 path.on('mouseout', function () { // when mouse leaves div
@@ -504,7 +508,7 @@
                             legendSpacing; // height of element is the height of the colored square plus the spacing      
                         var offset = height * color.domain().length /
                             2; // vertical offset of the entire legend = height of a single element & half the total number of elements  
-                        var horz = 6*
+                        var horz = 7*
                             legendRectSize; // the legend is shifted to the left to make room for the text
                         var vert = i * height -
                             offset; // the top of the element is hifted up or down from the center using the offset defiend earlier and the index of the current element 'i'               
@@ -523,7 +527,8 @@
                         var totalEnabled = d3.sum(dataArr.map(function (d) { // can't disable all options
                             return (d.enabled) ? 1 :
                                 0; // return 1 for each enabled entry. and summing it up
-                        }));
+                        }))
+                        
 
                         if (rect.attr('class') === 'disabled') { // if class is disabled
                             rect.attr('class', ''); // remove class disabled
@@ -536,10 +541,15 @@
                         pie.value(function (d) {
                             if (d.item === item) d.enabled =
                                 enabled; // if entry label matches legend label
+                            // console.log(d)
                             return (d.enabled) ? d.value :
                                 0; // update enabled property and return count or 0 based on the entry's status
                         });
-
+                        
+                        // cnt_ena = totalEnabled-1
+                        // console.log( totalEnabled, cnt_ena)
+                        // var title = "Top " + cnt_ena + " " + trade + "s from " + state + " in " + year.substring(3);
+                        // document.getElementById('regionTitle').innerHTML = title;
                         path = path.data(pie(dataArr)); // update pie with new data
 
                         path.transition() // transition of redrawn pie
@@ -556,12 +566,28 @@
                             });
                     });
 
+                    // svg.selectAll('path')
+                    //     .data(pie(dataArr))
+                    //     .enter()
+                    //     .append('text')
+                    //     .text(function(d){ // when mouse enters div  
+                    //         var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
+                    //         return (d.enabled) ? d.value : 0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
+                    //         }));
+                    //     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
+                    //     return percent
+                    //     })
+                    //     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
+                    //     .style("text-anchor", "middle")
+                    //     .style("font-size", 17)
+
                 // adding text to legend
                 legend.append('text')
                     .attr('x', legendRectSize + legendSpacing)
                     .attr('y', legendRectSize - legendSpacing)
                     .text(function (d) {
-                        return d;
+                        // console.log(d.substring(0,5)+"...")
+                        return d.substring(0,5)+"...";
                     }); // return label
 
 
@@ -631,7 +657,7 @@
                             }
                         }
                     })
-                }, 40)
+                }, 200)
                 setTimeout(() => {
                     if (dataArr.length > 1) {
                         drawimportsExportsGraph();
@@ -729,7 +755,7 @@
                             svg.append("g").call(d3.axisLeft(y));
                         };
                     };
-                }, 80)
+                }, 300)
             })
         }
 

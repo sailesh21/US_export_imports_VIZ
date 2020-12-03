@@ -113,7 +113,6 @@ div.tooltip {
     width: 1000;
 }
 
-/* Ganesh */
 
 .subtitle {
     font-size: 20px;
@@ -124,6 +123,7 @@ div.tooltip {
 .legend {
     font-size: 14px;
     width: 130 px;
+    align-items: right; 
 }
 
 rect {
@@ -158,7 +158,7 @@ rect.disabled {
     position: relative;
     display: block;
     align-items: center;
-    /* border: 1px solid black; */
+    /* border: 1px solid black;  */
 }
 
 /* tooltip */
@@ -203,4 +203,12 @@ rect.disabled {
 
 .bar {
     fill: steelblue;
+}
+
+.bar:hover{
+    background-color: red;
+}
+
+.label {
+    font-size: 13px;
 }
