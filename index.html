@@ -45,9 +45,7 @@
         <!-- <div class="legend">
         </div> -->
     </div>
-    <!-- <div class="titleHolder">
-        <p id="regionTitle"></p>
-    </div> -->
+
     <div id="bottom-row">
         <div id="bar-chart1">
         </div>
@@ -717,10 +715,10 @@
                                 .append("g")
                             svg1.append("text")
                                 .attr("y", 10)
-                                .attr('x', 50)
+                                .attr('x', 100)
                                 .attr("dy", "0.41em")
-                                .attr('font-weight', 'bold')
-                                .attr('font-size', '24px')
+                                .attr('font-size', '20px')
+                                .attr('letter-spacing', '0.07rem')
                                 .attr("text-anchor", "start")
                                 .text(title);
                             var svg = d3.select("#bar-chart2")
