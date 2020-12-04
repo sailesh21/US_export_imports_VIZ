@@ -45,9 +45,9 @@
         <!-- <div class="legend">
         </div> -->
     </div>
-    <div class="titleHolder">
+    <!-- <div class="titleHolder">
         <p id="regionTitle"></p>
-    </div>
+    </div> -->
     <div id="bottom-row">
         <div id="bar-chart1">
         </div>
@@ -62,12 +62,12 @@
 
     <script type="text/javascript">
         let width = 1000;
-        let height = 500;
+        let height = 450;
 
         let lowColor = '#F9EAD4'
         let highColor = '#D12175'
 
-        let selectedState = "";
+        let selectedState = "California";
 
         let tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
         let projection = d3.geoAlbersUsa().translate([width / 2, height / 2]).scale([1000]);
@@ -221,6 +221,13 @@
         }
 
         setMap("imctyall", "val2015");
+        let trade = 'import';
+        let year = 'val2015';
+        importsExportsGraph();
+        stateToCountryGraph(trade, year);
+
+        top5Graph(trade, year);
+
 
 
         $('.radio-buttons').on('change', function () {
@@ -250,6 +257,7 @@
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
+            console.log(title);
             let filename = "";
             let dataArr = [];
             if (trade == "export") {
@@ -277,7 +285,7 @@
                 var margin = {
                         top: 20,
                         right: 10,
-                        bottom: 30,
+                        bottom: 40,
                         left: 90
                     },
                     width = 500 - margin.left - margin.right,
@@ -294,7 +302,13 @@
                     .attr("height", height + margin.top + margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+                svg.append("text")
+                    .attr("y", 260)
+                    .attr('x', 230)
+                    .attr("dy", "0.71em")
+                    .attr('font-weight', 'bold')
+                    .attr("text-anchor", "end")
+                    .text("Value in Millions of Dollars");
                 dataArr.forEach(function (d) {
                     d.value = +d.value;
                 });
@@ -346,7 +360,7 @@
                     });
 
 
-                    
+
 
                 //add a value label to the right of each bar
                 // add the x Axis
@@ -357,8 +371,9 @@
                 // add the y Axis
                 svg.append("g")
                     .call(d3.axisLeft(y));
-                     
-                    
+
+
+
             })
 
 
@@ -407,7 +422,7 @@
                 var legendSpacing = 6; // defines spacing between squares
 
                 // define color scale
-                var color = d3.scaleOrdinal(['#b35806','#f1a340','#fee0b6','#d8daeb','#998ec3']);
+                var color = d3.scaleOrdinal(['#b35806', '#f1a340', '#fee0b6', '#d8daeb', '#998ec3']);
                 // console.log(color)
 
                 var svg = d3.select('#pie-chart') // select element in the DOM with id 'piechart'
@@ -416,7 +431,8 @@
                     .attr('height', height) // set the height of the svg element we just added
                     .append('g') // append 'g' element to the svg element
                     .attr('transform', 'translate(' + (width / 4) + ',' + (height / 2) +
-                        ')'); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
+                        ')'
+                    ); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
 
                 var arc = d3.arc()
                     .innerRadius(0) // none for pie chart
@@ -475,14 +491,17 @@
 
                 // mouse event handlers are attached to path so they need to come after its definition
                 path.on('mouseover', function (d) { // when mouse enters div  
-                    var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
+                    var total = d3.sum(dataArr.map(function (
+                        d
+                    ) { // calculate the total number of tickets in the dataset         
                         return (d.enabled) ? d.value :
                             0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
                     }));
                     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
                     tooltip.select('.item').html(d.data.item); // set current label           
                     tooltip.select('.value').html('$' + d.data.value); // set current count            
-                    tooltip.select('.percent').html(percent +'%'); // set percent calculated above          
+                    tooltip.select('.percent').html(percent +
+                        '%'); // set percent calculated above          
                     tooltip.style('display', 'block'); // set display                     
                 });
 
@@ -508,7 +527,7 @@
                             legendSpacing; // height of element is the height of the colored square plus the spacing      
                         var offset = height * color.domain().length /
                             2; // vertical offset of the entire legend = height of a single element & half the total number of elements  
-                        var horz = 7*
+                        var horz = 7 *
                             legendRectSize; // the legend is shifted to the left to make room for the text
                         var vert = i * height -
                             offset; // the top of the element is hifted up or down from the center using the offset defiend earlier and the index of the current element 'i'               
@@ -517,8 +536,10 @@
 
                 // adding colored squares to legend
                 legend.append('rect') // append rectangle squares to legend                                   
-                    .attr('width', legendRectSize) // width of rect size is defined above                        
-                    .attr('height', legendRectSize) // height of rect size is defined above                      
+                    .attr('width',
+                        legendRectSize) // width of rect size is defined above                        
+                    .attr('height',
+                        legendRectSize) // height of rect size is defined above                      
                     .style('fill', color) // each fill is passed a color
                     .style('stroke', color) // each stroke is passed a color
                     .on('click', function (item) {
@@ -528,7 +549,7 @@
                             return (d.enabled) ? 1 :
                                 0; // return 1 for each enabled entry. and summing it up
                         }))
-                        
+
 
                         if (rect.attr('class') === 'disabled') { // if class is disabled
                             rect.attr('class', ''); // remove class disabled
@@ -545,7 +566,7 @@
                             return (d.enabled) ? d.value :
                                 0; // update enabled property and return count or 0 based on the entry's status
                         });
-                        
+
                         // cnt_ena = totalEnabled-1
                         // console.log( totalEnabled, cnt_ena)
                         // var title = "Top " + cnt_ena + " " + trade + "s from " + state + " in " + year.substring(3);
@@ -566,20 +587,20 @@
                             });
                     });
 
-                    // svg.selectAll('path')
-                    //     .data(pie(dataArr))
-                    //     .enter()
-                    //     .append('text')
-                    //     .text(function(d){ // when mouse enters div  
-                    //         var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
-                    //         return (d.enabled) ? d.value : 0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
-                    //         }));
-                    //     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
-                    //     return percent
-                    //     })
-                    //     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
-                    //     .style("text-anchor", "middle")
-                    //     .style("font-size", 17)
+                // svg.selectAll('path')
+                //     .data(pie(dataArr))
+                //     .enter()
+                //     .append('text')
+                //     .text(function(d){ // when mouse enters div  
+                //         var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
+                //         return (d.enabled) ? d.value : 0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
+                //         }));
+                //     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
+                //     return percent
+                //     })
+                //     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
+                //     .style("text-anchor", "middle")
+                //     .style("font-size", 17)
 
                 // adding text to legend
                 legend.append('text')
@@ -587,11 +608,11 @@
                     .attr('y', legendRectSize - legendSpacing)
                     .text(function (d) {
                         // console.log(d.substring(0,5)+"...")
-                        return d.substring(0,5)+"...";
+                        return d.substring(0, 5) + "...";
                     }); // return label
 
 
-                document.getElementById('regionTitle').innerHTML = title;
+                // document.getElementById('regionTitle').innerHTML = title;
 
 
             })
@@ -601,7 +622,8 @@
         function importsExportsGraph() {
             let dataArr = [];
             let state = selectedState;
-            let title = "Imports and exports from " + state + " to world";
+
+            let title = trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " to world";
             d3.csv("data/exctyall.csv", function (data) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].statename == state && data[i].countryid == "World") {
@@ -683,11 +705,24 @@
                                     left: 90
                                 },
                                 width = 500 - margin.left - margin.right,
-                                height = 300 - margin.top -
+                                height = 280 - margin.top -
                                 margin.bottom;
                             var x = d3.scaleBand().range([0, width]).padding(0.1);
                             var y = d3.scaleLinear()
                                 .range([height, 0]);
+                            var svg1 = d3.select("#bar-chart2")
+                                .append("svg")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", 50)
+                                .append("g")
+                            svg1.append("text")
+                                .attr("y", 10)
+                                .attr('x', 50)
+                                .attr("dy", "0.41em")
+                                .attr('font-weight', 'bold')
+                                .attr('font-size', '24px')
+                                .attr("text-anchor", "start")
+                                .text(title);
                             var svg = d3.select("#bar-chart2")
                                 .append("svg")
                                 .attr("width", width + margin.left + margin.right)
@@ -753,6 +788,22 @@
                                 .attr("transform", "translate(0," + height + ")")
                                 .call(d3.axisBottom(x)); // add the y Axis 
                             svg.append("g").call(d3.axisLeft(y));
+                            svg.append("text")
+                                .attr("transform", "rotate(-90)")
+                                .attr("y", -70)
+                                .attr('x', -210)
+                                .attr("dy", "0.71em")
+                                .attr("text-anchor", "start")
+                                .attr('font-weight', 'bold')
+                                .text("Value in Millions of Dollars ");
+                            svg.append("text")
+                                .attr("y", 250)
+                                .attr('x', 230)
+                                .attr("dy", "0.41em")
+                                .attr("text-anchor", "end")
+                                .attr('font-weight', 'bold')
+                                .text("Year");
+
                         };
                     };
                 }, 300)
