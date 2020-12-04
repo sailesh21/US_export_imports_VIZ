@@ -254,7 +254,9 @@
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-            let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
+            // let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
+            var title = "Top 10 " + "Countries " + trade[0].toUpperCase() + trade.slice(1, 10) + "ed from " + state + " in " + year.substring(3);
+
             console.log(title);
             let filename = "";
             let dataArr = [];
@@ -283,7 +285,7 @@
                 var margin = {
                         top: 20,
                         right: 10,
-                        bottom: 40,
+                        bottom: 50,
                         left: 90
                     },
                     width = 500 - margin.left - margin.right,
@@ -300,9 +302,19 @@
                     .attr("height", height + margin.top + margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                
+                svg.append("text")
+                    .attr("y", -15)
+                    .attr('x', -10)
+                    .attr("dy", "0.41em")
+                    .attr('font-size', '15px')
+                    .attr('letter-spacing', '0.07rem')
+                    .attr("text-anchor", "start")
+                    .text(title);
+
                 svg.append("text")
                     .attr("y", 260)
-                    .attr('x', 230)
+                    .attr('x', 280)
                     .attr("dy", "0.71em")
                     .attr('font-weight', 'bold')
                     .attr("text-anchor", "end")
@@ -382,7 +394,8 @@
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-            var title = "Top " + trade + "s from " + state + " in " + year.substring(3);
+            // var title = "Top " + trade + "s from " + state + " in " + year.substring(3);
+            var title = "Top " + trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " in " + year.substring(3);
             let filename = "";
             let dataArr = [];
             if (trade == "export") {
@@ -409,7 +422,7 @@
                 //A piechart  can be used to show the 5 different commodities
 
 
-                var width = 650;
+                var width = 500;
                 var height = 300;
 
                 // a circle chart needs a radius
@@ -431,6 +444,15 @@
                     .attr('transform', 'translate(' + (width / 4) + ',' + (height / 2) +
                         ')'
                     ); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
+
+                svg.append("text")
+                    .attr("y", -140)
+                    .attr('x', -40)
+                    .attr("dy", "0.41em")
+                    .attr('font-size', '15px')
+                    .attr('letter-spacing', '0.07rem')
+                    .attr("text-anchor", "start")
+                    .text(title);
 
                 var arc = d3.arc()
                     .innerRadius(0) // none for pie chart
@@ -567,7 +589,7 @@
 
                         // cnt_ena = totalEnabled-1
                         // console.log( totalEnabled, cnt_ena)
-                        // var title = "Top " + cnt_ena + " " + trade + "s from " + state + " in " + year.substring(3);
+                        // var title = "Selected " + trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " in " + year.substring(3);
                         // document.getElementById('regionTitle').innerHTML = title;
                         path = path.data(pie(dataArr)); // update pie with new data
 
@@ -585,20 +607,6 @@
                             });
                     });
 
-                // svg.selectAll('path')
-                //     .data(pie(dataArr))
-                //     .enter()
-                //     .append('text')
-                //     .text(function(d){ // when mouse enters div  
-                //         var total = d3.sum(dataArr.map(function (d) { // calculate the total number of tickets in the dataset         
-                //         return (d.enabled) ? d.value : 0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
-                //         }));
-                //     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
-                //     return percent
-                //     })
-                //     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
-                //     .style("text-anchor", "middle")
-                //     .style("font-size", 17)
 
                 // adding text to legend
                 legend.append('text')
@@ -606,7 +614,7 @@
                     .attr('y', legendRectSize - legendSpacing)
                     .text(function (d) {
                         // console.log(d.substring(0,5)+"...")
-                        return d.substring(0, 5) + "...";
+                        return d.substring(0, 18) + "...";
                     }); // return label
 
 
