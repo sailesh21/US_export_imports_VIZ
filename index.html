@@ -137,7 +137,11 @@
                             }
 
                             d3.select("#bar-chart2").selectAll("svg").remove();
-                            importsExportsGraph();
+                            if (trade == "exctyall") {
+                                importsExportsGraph("export");
+                            } else {
+                                importsExportsGraph("import");
+                            }
                         })
                         .on("mouseover", function (d) {
                             tooltip.transition().duration(200).style("opacity", 1);
@@ -221,7 +225,7 @@
         setMap("imctyall", "val2015");
         let trade = 'import';
         let year = 'val2015';
-        importsExportsGraph();
+        importsExportsGraph(trade);
         stateToCountryGraph(trade, year);
 
         top5Graph(trade, year);
@@ -245,7 +249,7 @@
 
             top5Graph(trade, year);
 
-            importsExportsGraph();
+            importsExportsGraph(trade);
 
         });
 
@@ -625,7 +629,7 @@
         }
 
 
-        function importsExportsGraph() {
+        function importsExportsGraph(trade) {
             let dataArr = [];
             let state = selectedState;
 
@@ -725,7 +729,7 @@
                                 .attr("y", 10)
                                 .attr('x', 100)
                                 .attr("dy", "0.41em")
-                                .attr('font-size', '20px')
+                                .attr('font-size', '15px')
                                 .attr('letter-spacing', '0.07rem')
                                 .attr("text-anchor", "start")
                                 .text(title);
