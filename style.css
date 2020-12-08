@@ -17,7 +17,7 @@ div.tooltip {
 .legend {
     position: absolute;
     left: 20px;
-    top: 30px;
+    top: 80px;
 }
 
 .axis text {
@@ -202,14 +202,13 @@ rect.disabled {
 }
 
 .bar {
-    fill: #67a9cf;
+    fill: #4385F4;
 }
 
 .bar:hover {
-    fill: #ef8a62;
+    fill: #9999FF;
 }
 
 .label {
     font-size: 13px;
 }
-

@@ -11,8 +11,9 @@
 
 <body>
 
+    <h1>USA Exports and Imports with US Census Foreign Trade Data</h1>
     <div id="top-row">
-        <svg width="1000" height="500" id="usmap"></svg>
+        <svg width="1000" height="530" id="usmap"></svg>
         <div id="filter-form">
             <h3>Select Import/Export</h3>
             <p>
@@ -62,8 +63,8 @@
         let width = 1000;
         let height = 450;
 
-        let lowColor = '#F9EAD4'
-        let highColor = '#D12175'
+        let lowColor = '#fee8c8'
+        let highColor = '#e34a33'
 
         let selectedState = "California";
 
@@ -74,6 +75,8 @@
         let usmap = d3.select("#usmap");
 
         function setMap(trade, year) {
+
+
             d3.csv("data/" + trade + ".csv", function (data) {
                 let dataArray = [];
                 for (let d = 0; d < data.length; d++) {
@@ -112,7 +115,9 @@
                         .data(json.features)
                         .enter()
                         .append("path")
-                        .attr("class", "state")
+                        .attr("class", function (d) {
+                            return "state " + d.properties.name;
+                        })
                         .attr("d", path)
                         .style("stroke", "#000")
                         .style("stroke-width", "1")
@@ -121,6 +126,7 @@
                         })
                         .on("click", function (d) {
                             selectedState = d.properties.name;
+
                             d3.select("#bar-chart1").selectAll("svg").remove();
                             if (trade == "exctyall") {
                                 stateToCountryGraph("export", year);
@@ -142,6 +148,8 @@
                             } else {
                                 importsExportsGraph("import");
                             }
+
+                            setActiveState(selectedState);
                         })
                         .on("mouseover", function (d) {
                             tooltip.transition().duration(200).style("opacity", 1);
@@ -174,6 +182,7 @@
                         .attr('fill', '#000');
 
                 });
+
                 // add a legend
                 var w = 140,
                     h = 300;
@@ -209,6 +218,8 @@
                     .style("fill", "url(#gradient)")
                     .attr("transform", "translate(0,10)");
 
+
+
                 var y = d3.scaleLinear()
                     .range([h, 0])
                     .domain([minVal, maxVal]);
@@ -227,9 +238,9 @@
         let year = 'val2015';
         importsExportsGraph(trade);
         stateToCountryGraph(trade, year);
-
         top5Graph(trade, year);
 
+        setUSmapTitle(trade, year)
 
 
         $('.radio-buttons').on('change', function () {
@@ -251,6 +262,9 @@
 
             importsExportsGraph(trade);
 
+            setUSmapTitle(trade, year);
+
+
         });
 
 
@@ -259,7 +273,14 @@
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             // let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
-            var title = "Top 10 " + "Countries " + trade[0].toUpperCase() + trade.slice(1, 10) + "ed from " + state + " in " + year.substring(3);
+            let title = "";
+
+            if (trade == "import") {
+                title = "Top 10 countries that imported to " + state +
+                    " in " + year.substring(3);
+            } else {
+                title = "Top 10 countries that " + state + " exported in " + year.substring(3);
+            }
 
             console.log(title);
             let filename = "";
@@ -306,21 +327,21 @@
                     .attr("height", height + margin.top + margin.bottom)
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                
+
                 svg.append("text")
                     .attr("y", -15)
                     .attr('x', -10)
+                    .attr('font-weight', 'bold')
                     .attr("dy", "0.41em")
                     .attr('font-size', '15px')
-                    .attr('letter-spacing', '0.07rem')
                     .attr("text-anchor", "start")
+                    .attr("class", "chart_title")
                     .text(title);
 
                 svg.append("text")
                     .attr("y", 260)
                     .attr('x', 280)
                     .attr("dy", "0.71em")
-                    .attr('font-weight', 'bold')
                     .attr("text-anchor", "end")
                     .text("Value in Millions of Dollars");
                 dataArr.forEach(function (d) {
@@ -347,9 +368,10 @@
                 tooltip.append('div') // add divs to the tooltip defined above                     
                     .attr('class', 'value');
 
-                svg.selectAll(".bar")
+                var bars = svg.selectAll(".bar")
                     .data(dataArr)
-                    .enter().append("rect")
+                    .enter()
+                bars.append("rect")
                     .attr("class", "bar")
                     //.attr("x", function(d) { return x(d.sales); })
                     .attr("width", function (d) {
@@ -365,16 +387,26 @@
                             .style("top", d3.event.pageY - 70 + "px")
                             .style("display", "inline-block")
                             .style('opacity', 1)
-                            .html((d.country) + "<br>" + "$" + (d.value));
+                            .html((d.country) + "<br>" + "$" + (d.value) + " mil");
                     })
                     .on("mouseout", function (d) {
                         tooltip.style("display", "none");
                         d3.selectAll("#tooltip").remove();
 
                     });
+                // bars.append("text")
+                //     .attr("class", "labelers")
+                //     //y position of the label is halfway down the bar
+                //     .attr("y", function (d) {
+                //         return y(d.country) + 15;
+                //     })
 
-
-
+                //     .attr("x", function (d) {
+                //         return x(d.value);
+                //     })
+                //     .text(function (d) {
+                //         return d.value;
+                //     });
 
                 //add a value label to the right of each bar
                 // add the x Axis
@@ -386,8 +418,6 @@
                 svg.append("g")
                     .call(d3.axisLeft(y));
 
-
-
             })
 
 
@@ -395,11 +425,14 @@
 
 
         function top5Graph(trade, year) {
+
+
             let state = selectedState;
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             // var title = "Top " + trade + "s from " + state + " in " + year.substring(3);
-            var title = "Top " + trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " in " + year.substring(3);
+            var title = "Top " + trade + "ed commodities of " + state + " in " + year
+                .substring(3);
             let filename = "";
             let dataArr = [];
             if (trade == "export") {
@@ -453,6 +486,7 @@
                     .attr("y", -140)
                     .attr('x', -40)
                     .attr("dy", "0.41em")
+                    .attr('font-weight', 'bold')
                     .attr('font-size', '15px')
                     .attr('letter-spacing', '0.07rem')
                     .attr("text-anchor", "start")
@@ -523,7 +557,8 @@
                     }));
                     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
                     tooltip.select('.item').html(d.data.item); // set current label           
-                    tooltip.select('.value').html('$' + d.data.value); // set current count            
+                    tooltip.select('.value').html('$' + d.data.value +
+                        " mil"); // set current count            
                     tooltip.select('.percent').html(percent +
                         '%'); // set percent calculated above          
                     tooltip.style('display', 'block'); // set display                     
@@ -538,7 +573,6 @@
                         .style('left', (d3.event.layerX + 10) +
                             'px'); // always 10px to the right of the mouse
                 });
-
 
                 // define legend
                 var legend = svg.selectAll('.legend') // selecting elements with class 'legend'
@@ -609,6 +643,7 @@
                                     return arc(interpolate(t));
                                 };
                             });
+
                     });
 
 
@@ -630,6 +665,9 @@
 
 
         function importsExportsGraph(trade) {
+
+
+
             let dataArr = [];
             let state = selectedState;
 
@@ -661,6 +699,8 @@
                     }
                 }
                 setTimeout(() => {
+
+                    setActiveState(selectedState);
 
                     d3.csv("data/imctyall.csv", function (data) {
                         for (let i = 0; i < data.length; i++) {
@@ -728,6 +768,7 @@
                             svg1.append("text")
                                 .attr("y", 10)
                                 .attr('x', 100)
+                                .attr('font-weight', 'bold')
                                 .attr("dy", "0.41em")
                                 .attr('font-size', '15px')
                                 .attr('letter-spacing', '0.07rem')
@@ -765,10 +806,12 @@
                                 .attr('class', 'year');
                             tooltip.append('div') // add divs to the tooltip defined above
                                 .attr('class', 'value');
-
-                            svg.selectAll(".bar")
+                            var bars = svg.selectAll(".bar")
                                 .data(dataArr1)
-                                .enter().append("rect")
+                                .enter()
+                                .append("g")
+
+                            bars.append("rect")
                                 .attr("class", "bar")
                                 .attr("x", function (d) {
                                     return x(d.year);
@@ -788,12 +831,27 @@
                                         .style('opacity', 1)
                                         .html((state) + "<br>" + (trade) + "<br>" + (d.year) +
                                             "<br>" + "$" +
-                                            (d.value));
+                                            (d.value) + " mil");
                                 })
                                 .on("mouseout", function (d) {
                                     tooltip.style("display", "none");
 
                                 });
+
+                            bars.append("text")
+                                .attr("class", "labelers")
+                                //y position of the label is halfway down the bar
+                                .attr("y", function (d) {
+                                    return y(d.value) - 5;
+                                })
+
+                                .attr("x", function (d) {
+                                    return x(d.year) + 3;
+                                })
+                                .text(function (d) {
+                                    return d.value;
+                                });
+
                             svg.append("g")
                                 .attr("transform", "translate(0," + height + ")")
                                 .call(d3.axisBottom(x)); // add the y Axis 
@@ -804,20 +862,48 @@
                                 .attr('x', -210)
                                 .attr("dy", "0.71em")
                                 .attr("text-anchor", "start")
-                                .attr('font-weight', 'bold')
                                 .text("Value in Millions of Dollars ");
                             svg.append("text")
                                 .attr("y", 250)
                                 .attr('x', 230)
                                 .attr("dy", "0.41em")
                                 .attr("text-anchor", "end")
-                                .attr('font-weight', 'bold')
                                 .text("Year");
+
+
 
                         };
                     };
                 }, 300)
             })
+        }
+
+        function setActiveState(state) {
+            $(".state").each(function () {
+                if ($(this).hasClass(state)) {
+                    $(this).css({
+                        "stroke-width": "4px"
+                    });
+                } else {
+                    $(this).css({
+                        "stroke-width": "1px"
+                    });
+                }
+            })
+        }
+
+
+        function setUSmapTitle(trade, year) {
+
+            let title = "Distribution of " + trade + "s (in million dollars) of all US states in " + year.slice(3);
+
+            d3.select("#usmap").append("text")
+                .attr("y", 500)
+                .attr('x', '50%')
+                .attr("text-anchor", "middle")
+                .attr('font-weight', 'bold')
+                .text(title);
+
         }
 
         function clearAll() {
