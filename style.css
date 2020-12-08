@@ -178,6 +178,13 @@ rect.disabled {
     z-index: 10;
 }
 
+.arc text {
+    font: 12px sans-serif;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+
 .footer {
     padding-top: 50px;
     text-align: center;
