@@ -209,11 +209,11 @@ rect.disabled {
 }
 
 .bar {
-    fill: #4385F4;
+    fill: #2b8cbe;
 }
 
 .bar:hover {
-    fill: #9999FF;
+    fill: #a1d99b;
 }
 
 .label {
