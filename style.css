@@ -3,35 +3,6 @@ body {
     background-color: #ffffff;
 }
 
-a.button1 {
-    display: inline-block;
-    padding: 0.3em 1.2em;
-    margin: 0 0.1em 0.1em 0;
-    border: 0.26em solid rgb(255, 255, 2550);
-    border-radius: 2em;
-    box-sizing: border-box;
-    text-decoration: none;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 300;
-    color: #FFFFFF;
-    text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
-    text-align: center;
-    transition: all 0.2s;
-}
-
-
-a.button1:hover {
-
-    border-color: rgb(216, 218, 235);
-}
-
-@media all and (max-width:30em) {
-    a.button {
-        display: block;
-        margin: 0.2em auto;
-    }
-}
-
 div.tooltip {
     position: absolute;
     text-align: left;
@@ -238,13 +209,30 @@ rect.disabled {
 }
 
 .bar {
-    fill: #2b8cbe;
+    fill: #4385F4;
 }
 
 .bar:hover {
-    fill: #a1d99b;
+    fill: #9999FF;
 }
 
 .label {
     font-size: 13px;
+}
+
+#nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+}
+
+#nav #nav-last a {
+    margin: 0px 10px;
+    text-decoration: none;
+    color: #000;
+}
+
+#nav #nav-last a:hover {
+    border-bottom: 2px solid #000;
 }

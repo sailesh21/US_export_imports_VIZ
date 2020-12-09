@@ -7,13 +7,17 @@
     <script src='https://cdn.rawgit.com/Caged/d3-tip/v0.8.0-alpha.1/index.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link type="text/css" rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/jpg" href="data/icon.jpg">
-
 </head>
 
 <body>
 
-    <h1>USA Exports and Imports with US Census Foreign Trade Data</h1>
+    <div id="nav">
+        <h1>USA Exports and Imports with US Census Foreign Trade Data</h1>
+        <div id="nav-last">
+            <a href="documentation.pdf" target="_blank">Documentation</a>
+            <a href="#" target="_blank">Video</a>
+        </div>
+    </div>
     <div id="top-row">
         <svg width="1000" height="530" id="usmap"></svg>
         <div id="filter-form">
@@ -45,10 +49,8 @@
                 <label for="2018">2018</label>
             </p>
         </div>
-        <div>
-            <br><br><br>
-            <a href="documentation.html" class="button1" style="background-color:rgb(179, 88, 6)"> Documentation </a>
-        </div>
+        <!-- <div class="legend">
+        </div> -->
     </div>
 
     <div id="bottom-row">
@@ -398,6 +400,22 @@
                         d3.selectAll("#tooltip").remove();
 
                     });
+                // bars.append("text")
+                //     .attr("class", "labelers")
+                //     //y position of the label is halfway down the bar
+                //     .attr("y", function (d) {
+                //         return y(d.country) + 15;
+                //     })
+
+                //     .attr("x", function (d) {
+                //         return x(d.value);
+                //     })
+                //     .text(function (d) {
+                //         return d.value;
+                //     });
+
+                //add a value label to the right of each bar
+                // add the x Axis
                 svg.append("g")
                     .attr("transform", "translate(0," + height + ")")
                     .call(d3.axisBottom(x));
@@ -420,7 +438,7 @@
             //let trade = $('.radio-buttons-1:checked').attr("id").trim();
             //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             // var title = "Top " + trade + "s from " + state + " in " + year.substring(3);
-            var title = "Top " + trade[0].toUpperCase() + trade.slice(1, 10) + "ed Commodities of " + state + " in " +
+            var title = "Top 5 " + trade[0].toUpperCase() + trade.slice(1, 10) + "ed Commodities of " + state + " in " +
                 year.substring(3);
             let filename = "";
             let dataArr = [];
@@ -571,7 +589,9 @@
                             0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
                     }));
                     var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
-                    tooltip.select('.item').html(d.data.item); // set current label           
+                    tooltip.select('.item').html(d.data.item.charAt(0) + d.data.item.substring(1)
+                        .toLowerCase()); // set current label           
+                    // tooltip.select('.item').html(d.data.item); // set current label           
                     tooltip.select('.value').html('$' + d.data.value +
                         " mil"); // set current count            
                     tooltip.select('.percent').html(percent +
@@ -694,7 +714,10 @@
                     .attr('y', legendRectSize - legendSpacing)
                     .text(function (d) {
                         // console.log(d.substring(0,5)+"...")
-                        return d.substring(0, 18) + "...";
+                        let str = d.substring(0, 18) + "...";
+                        return str.charAt(0) + str.substring(1).toLowerCase()
+                        // return d.substring(0, 18) + "...";
+
                     }); // return label
 
 
@@ -713,7 +736,15 @@
             let dataArr = [];
             let state = selectedState;
 
-            let title = trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " to world";
+            let title = "";
+
+            if (trade == "import") {
+                title = "Imports from world to " + state;
+            } else {
+                title = "Exports from " + state + " to world";
+            }
+
+            // let title = trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " to world";
             d3.csv("data/exctyall.csv", function (data) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].statename == state && data[i].countryid == "World") {
@@ -890,8 +921,9 @@
                                 .attr("x", function (d) {
                                     return x(d.year) + 3;
                                 })
+                                .attr("font-size", "12px")
                                 .text(function (d) {
-                                    return d.value;
+                                    return "$" + d.value + " mil";
                                 });
 
                             svg.append("g")
