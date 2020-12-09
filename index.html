@@ -20,7 +20,7 @@
     </div>
     <div id="top-row">
         <svg width="1000" height="530" id="usmap"></svg>
-        <div id="filter-form">
+        <div id="filter-form" name='filterform'>
             <h3>Select Import/Export</h3>
             <p>
                 <input type="radio" id="import" class="radio-buttons radio-buttons-1" name="radio-group-1" checked>
@@ -33,19 +33,23 @@
 
             <h3>Select Year</h3>
             <p>
-                <input type="radio" id="2015" class="radio-buttons radio-buttons-2" name="radio-group-2" checked>
+                <input type="radio" id="2015" onchange="changeGraphs();" class="radio-buttons radio-buttons-2"
+                    name="radio-group-2" checked>
                 <label for="2015">2015</label>
             </p>
             <p>
-                <input type="radio" id="2016" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <input type="radio" id="2016" onchange="changeGraphs();" class="radio-buttons radio-buttons-2"
+                    name="radio-group-2">
                 <label for="2016">2016</label>
             </p>
             <p>
-                <input type="radio" id="2017" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <input type="radio" id="2017" onchange="changeGraphs();" class="radio-buttons radio-buttons-2"
+                    name="radio-group-2">
                 <label for="2017">2017</label>
             </p>
             <p>
-                <input type="radio" id="2018" class="radio-buttons radio-buttons-2" name="radio-group-2">
+                <input type="radio" id="2018" onchange="changeGraphs();" class="radio-buttons radio-buttons-2"
+                    name="radio-group-2">
                 <label for="2018">2018</label>
             </p>
         </div>
@@ -249,7 +253,30 @@
         setUSmapTitle(trade, year)
 
 
-        $('.radio-buttons').on('change', function () {
+        // $('.radio-buttons').on('change', function () {
+        //     let trade = $('.radio-buttons-1:checked').attr("id").trim();
+        //     let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
+        //     let filename = "";
+
+        //     if (trade == "export") {
+        //         filename = "exctyall";
+        //     } else {
+        //         filename = "imctyall";
+        //     }
+        //     clearAll();
+        //     setMap(filename, year);
+
+        //     stateToCountryGraph(trade, year);
+
+        //     top5Graph(trade, year);
+
+        //     importsExportsGraph(trade);
+
+        //     setUSmapTitle(trade, year);
+
+
+        // });
+        const changeGraphs = () => {
             let trade = $('.radio-buttons-1:checked').attr("id").trim();
             let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
             let filename = "";
@@ -269,16 +296,11 @@
             importsExportsGraph(trade);
 
             setUSmapTitle(trade, year);
-
-
-        });
+        }
 
 
         function stateToCountryGraph(trade, year) {
             let state = selectedState;
-            //let trade = $('.radio-buttons-1:checked').attr("id").trim();
-            //let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-            // let title = "Countries that " + trade + "ed from " + state + " in " + year.substring(3);
             let title = "";
 
             if (trade == "import") {
@@ -361,17 +383,17 @@
                     return d.country;
                 }));
 
-                var tooltip = d3.select('#bar-chart1') // select element in the DOM with id 'chart'
+                var tooltip = d3.select('#bar-chart1')
                     .append(
                         'div'
-                    ) // append a div element to the element we've selected                                    
+                    )
                     .attr('class', 'tooltip')
-                    .style('opacity', 0); // add class 'tooltip' on the divs we just selected
+                    .style('opacity', 0);
 
-                tooltip.append('div') // add divs to the tooltip defined above                            
+                tooltip.append('div')
                     .attr('class', 'country');
 
-                tooltip.append('div') // add divs to the tooltip defined above                     
+                tooltip.append('div')
                     .attr('class', 'value');
 
                 var bars = svg.selectAll(".bar")
@@ -379,7 +401,6 @@
                     .enter()
                 bars.append("rect")
                     .attr("class", "bar")
-                    //.attr("x", function(d) { return x(d.sales); })
                     .attr("width", function (d) {
                         return x(d.value);
                     })
@@ -400,22 +421,7 @@
                         d3.selectAll("#tooltip").remove();
 
                     });
-                // bars.append("text")
-                //     .attr("class", "labelers")
-                //     //y position of the label is halfway down the bar
-                //     .attr("y", function (d) {
-                //         return y(d.country) + 15;
-                //     })
 
-                //     .attr("x", function (d) {
-                //         return x(d.value);
-                //     })
-                //     .text(function (d) {
-                //         return d.value;
-                //     });
-
-                //add a value label to the right of each bar
-                // add the x Axis
                 svg.append("g")
                     .attr("transform", "translate(0," + height + ")")
                     .call(d3.axisBottom(x));
@@ -730,9 +736,6 @@
 
 
         function importsExportsGraph(trade) {
-
-
-
             let dataArr = [];
             let state = selectedState;
 
@@ -744,7 +747,6 @@
                 title = "Exports from " + state + " to world";
             }
 
-            // let title = trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " to world";
             d3.csv("data/exctyall.csv", function (data) {
                 for (let i = 0; i < data.length; i++) {
                     if (data[i].statename == state && data[i].countryid == "World") {
@@ -808,7 +810,7 @@
                         drawimportsExportsGraph();
 
                         function drawimportsExportsGraph() {
-
+                            let prevChecked = null;
                             var trade = $('.radio-buttons-1:checked').attr("id").trim();
                             let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
                             var dataArr1 = [];
@@ -863,12 +865,12 @@
                                 return d.year;
                             }));
                             var tooltip = d3.select(
-                                    '#bar-chart2') // select element in the DOM with id 'chart'
-                                .append('div') // append a div element to the element we've selected
+                                    '#bar-chart2')
+                                .append('div')
                                 .attr('class',
                                     'tooltip')
                                 .style("opacity",
-                                    0); // add class 'tooltip' on the divs we just selected
+                                    0);
 
                             tooltip.append('div') // add divs to the tooltip defined above
                                 .attr('class', 'state');
@@ -909,11 +911,19 @@
                                 .on("mouseout", function (d) {
                                     tooltip.style("display", "none");
 
+                                })
+                                .on("click", function (d) {
+                                    if (prevChecked !== null) {
+                                        document.getElementById(String(d.year)).checked = false;
+                                    }
+                                    document.getElementById(String(d.year)).checked = true
+                                    prevChecked = String(d.year);
+                                    changeGraphs();
+                                    tooltip.style("display", "none");
                                 });
 
                             bars.append("text")
                                 .attr("class", "labelers")
-                                //y position of the label is halfway down the bar
                                 .attr("y", function (d) {
                                     return y(d.value) - 5;
                                 })
@@ -928,7 +938,7 @@
 
                             svg.append("g")
                                 .attr("transform", "translate(0," + height + ")")
-                                .call(d3.axisBottom(x)); // add the y Axis 
+                                .call(d3.axisBottom(x));
                             svg.append("g").call(d3.axisLeft(y));
                             svg.append("text")
                                 .attr("transform", "rotate(-90)")
