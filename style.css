@@ -184,6 +184,9 @@ rect.disabled {
     font-weight: bold;
 }
 
+path:hover {
+    fill: #a1d99b;
+}
 
 .footer {
     padding-top: 50px;
@@ -209,11 +212,11 @@ rect.disabled {
 }
 
 .bar {
-    fill: #2b8cbe;
+    fill: #41aadf;
 }
 
 .bar:hover {
-    fill: #a1d99b;
+    fill: #255b82;
 }
 
 .label {

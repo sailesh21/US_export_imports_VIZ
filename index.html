@@ -23,11 +23,13 @@
         <div id="filter-form" name='filterform'>
             <h3>Select Import/Export</h3>
             <p>
-                <input type="radio" id="import" class="radio-buttons radio-buttons-1" name="radio-group-1" checked>
+                <input type="radio" id="import" onchange="changeGraphs();" class=" radio-buttons radio-buttons-1"
+                    name="radio-group-1" checked>
                 <label for="import">Import</label>
             </p>
             <p>
-                <input type="radio" id="export" class="radio-buttons radio-buttons-1" name="radio-group-1">
+                <input type="radio" id="export" onchange="changeGraphs();" class=" radio-buttons radio-buttons-1"
+                    name="radio-group-1">
                 <label for="export">Export</label>
             </p>
 
@@ -253,29 +255,7 @@
         setUSmapTitle(trade, year)
 
 
-        // $('.radio-buttons').on('change', function () {
-        //     let trade = $('.radio-buttons-1:checked').attr("id").trim();
-        //     let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
-        //     let filename = "";
 
-        //     if (trade == "export") {
-        //         filename = "exctyall";
-        //     } else {
-        //         filename = "imctyall";
-        //     }
-        //     clearAll();
-        //     setMap(filename, year);
-
-        //     stateToCountryGraph(trade, year);
-
-        //     top5Graph(trade, year);
-
-        //     importsExportsGraph(trade);
-
-        //     setUSmapTitle(trade, year);
-
-
-        // });
         const changeGraphs = () => {
             let trade = $('.radio-buttons-1:checked').attr("id").trim();
             let year = "val" + $('.radio-buttons-2:checked').attr("id").trim();
@@ -470,24 +450,20 @@
                 var width = 500;
                 var height = 300;
 
-                // a circle chart needs a radius
                 var radius = Math.min(width, height) / 2.5;
 
-                // legend dimensions
                 var legendRectSize = 25;
                 var legendSpacing = 6;
-                // define color scale
                 var color = d3.scaleOrdinal(['#b35806', '#f1a340', '#fee0b6', '#d8daeb', '#998ec3']);
-                // console.log(color)
 
                 var svg = d3.select('#pie-chart')
                     .append('svg')
                     .attr('width', width)
-                    .attr('height', height) // set the height of the svg element we just added
-                    .append('g') // append 'g' element to the svg element
+                    .attr('height', height)
+                    .append('g')
                     .attr('transform', 'translate(' + (width / 4) + ',' + (height / 2) +
                         ')'
-                    ); // our reference is now to the 'g' element. centerting the 'g' element to the svg element
+                    );
 
                 svg.append("text")
                     .attr("y", -140)
@@ -500,65 +476,62 @@
                     .text(title);
 
                 var arc = d3.arc()
-                    .innerRadius(0) // none for pie chart
-                    .outerRadius(radius); // size of overall chart
+                    .innerRadius(0)
+                    .outerRadius(radius);
 
                 var labelArc = d3.arc()
                     .outerRadius(radius - 30)
                     .innerRadius(radius - 40);
 
-                var pie = d3.pie() // start and end angles of the segments
+                var pie = d3.pie()
                     .value(function (d) {
                         return d.value;
-                    }) // how to extract the numerical data from each entry in our dataset
+                    })
                     .sort(
                         null
-                    ); // by default, data sorts in oescending value. this will mess with our animation so we set it to null
+                    );
 
-                // define tooltip
-                var tooltip = d3.select('#pie-chart') // select element in the DOM with id 'chart'
+                var tooltip = d3.select('#pie-chart')
                     .append(
                         'div'
-                    ) // append a div element to the element we've selected                                    
-                    .attr('class', 'tooltip'); // add class 'tooltip' on the divs we just selected
+                    )
+                    .attr('class', 'tooltip');
 
-                tooltip.append('div') // add divs to the tooltip defined above                            
-                    .attr('class', 'item'); // add class 'label' on the selection                         
+                tooltip.append('div')
+                    .attr('class', 'item');
 
-                tooltip.append('div') // add divs to the tooltip defined above                     
-                    .attr('class', 'value'); // add class 'count' on the selection                  
+                tooltip.append('div')
+                    .attr('class', 'value');
 
-                tooltip.append('div') // add divs to the tooltip defined above  
-                    .attr('class', 'percent'); // add class 'percent' on the selection
+                tooltip.append('div')
+                    .attr('class', 'percent');
 
 
                 dataArr.forEach(function (d) {
-                    d.value = +d.value; // calculate count as we iterate through the data
-                    d.enabled = true; // add enabled property to track which entries are checked
+                    d.value = +d.value;
+                    d.enabled = true;
                 });
 
-                // creating the chart
                 var g = svg.selectAll(
                         "path"
-                    ) // select all path elements inside the svg. specifically the 'g' element. they don't exist yet but they will be created below
+                    )
                     .data(pie(
                         dataArr
-                    )) //associate dataset wit he path elements we're about to create. must pass through the pie function. it magically knows how to extract values and bakes it into the pie
-                    .enter() //creates placeholder nodes for each of the values
-                    .append('g') // replace placeholders with path elements
+                    ))
+                    .enter()
+                    .append('g')
                     .attr("class", "arc");
 
                 g.append("path")
-                    .attr('d', arc) // define d attribute with arc function above
+                    .attr('d', arc)
                     .attr("stroke", "white")
                     .style("stroke-width", "0.75px")
                     .attr('fill', function (d) {
                         return color(d.data.item);
-                    }) // use color scale to define fill of each label in dataset
+                    })
                     .each(function (d) {
                         this._current - d;
-                    }); // creates a smooth animation for each track
-
+                    });
                 // console.log(dataArr)
 
                 g.append("text")
@@ -566,162 +539,86 @@
                         return "translate(" + labelArc.centroid(d) + ")";
                     })
                     .attr("dy", ".5em")
-                    .text(function (d) { // when mouse enters div  
+                    .text(function (d) {
                         var total = d3.sum(dataArr.map(function (
                             d
-                        ) { // calculate the total number of tickets in the dataset         
+                        ) {
                             return (d.enabled) ? d.value :
-                                0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
+                                0;
                         }));
-                        var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
+                        var percent = Math.round(1000 * d.data.value / total) / 10;
                         // console.log(percent+"%");
-                        return percent + "%"; // set percent calculated above          
+                        return percent + "%";
                     });
 
-                // g.on("mouseover",arcTween(radius+20, 0));
 
-                // mouse event handlers are attached to path so they need to come after its definition
-                g.on('mouseover', function (d) { // when mouse enters div  
+                g.on('mouseover', function (d) {
                     var total = d3.sum(dataArr.map(function (
                         d
-                    ) { // calculate the total number of tickets in the dataset         
+                    ) {
                         return (d.enabled) ? d.value :
-                            0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
+                            0;
                     }));
-                    var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
+                    var percent = Math.round(1000 * d.data.value / total) / 10;
                     tooltip.select('.item').html(d.data.item.charAt(0) + d.data.item.substring(1)
-                        .toLowerCase()); // set current label           
-                    // tooltip.select('.item').html(d.data.item); // set current label           
+                        .toLowerCase());
                     tooltip.select('.value').html('$' + d.data.value +
-                        " mil"); // set current count            
+                        " mil");
                     tooltip.select('.percent').html(percent +
-                        '%'); // set percent calculated above          
-                    tooltip.style('display', 'block'); // set display                     
+                        '%');
+                    tooltip.style('display', 'block');
+
                 });
 
-                g.on('mouseout', function () { // when mouse leaves div
-                    // arcTween(radius, 150);
-                    tooltip.style('display', 'none'); // hide tooltip for that element
+                g.on('mouseout', function () {
+                    tooltip.style('display', 'none');
                 });
 
-                // function arcTween(radius, delay) {
-                //     return function() {
-                //         d3.select(this).transition().delay(delay).attrTween("d", function(d) {
-                //         var i = d3.interpolate(d.radius, radius);
-                //         return function(t) { d.radius = i(t); return arc(d); };
-                //         });
-                //     };
-                //     }
 
-                g.on('mousemove', function (d) { // when mouse moves                                         
-                    tooltip.style('top', (d3.event.layerY + 10) + 'px') // always 10px below the cursor
+
+                g.on('mousemove', function (d) {
+                    tooltip.style('top', (d3.event.layerY + 10) + 'px')
                         .style('left', (d3.event.layerX + 10) +
-                            'px'); // always 10px to the right of the mouse
+                            'px');
                 });
 
-                // define legend
-                var legend = svg.selectAll('.legend') // selecting elements with class 'legend'
-                    .data(color.domain()) // refers to an array of labels from our dataset
-                    .enter() // creates placeholder
-                    .append('g') // replace placeholders with g elements
-                    .attr('class', 'legend') // each g is given a legend class
+                var legend = svg.selectAll('.legend')
+                    .data(color.domain())
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend')
                     .attr('transform', function (d, i) {
                         var height = legendRectSize +
-                            legendSpacing; // height of element is the height of the colored square plus the spacing      
+                            legendSpacing;
                         var offset = height * color.domain().length /
-                            2; // vertical offset of the entire legend = height of a single element & half the total number of elements  
+                            2;
                         var horz = 7 *
-                            legendRectSize; // the legend is shifted to the left to make room for the text
+                            legendRectSize;
                         var vert = i * height -
-                            offset; // the top of the element is hifted up or down from the center using the offset defiend earlier and the index of the current element 'i'               
-                        return 'translate(' + horz + ',' + vert + ')'; //return translation       
+                            offset;
+                        return 'translate(' + horz + ',' + vert + ')';
                     });
 
-                // adding colored squares to legend
-                legend.append('rect') // append rectangle squares to legend                                   
+                legend.append('rect')
                     .attr('width',
-                        legendRectSize) // width of rect size is defined above                        
+                        legendRectSize)
                     .attr('height',
-                        legendRectSize) // height of rect size is defined above                      
-                    .style('fill', color) // each fill is passed a color
-                    .style('stroke', color); // each stroke is passed a color
-                //     .on('click', function (item) {
-                //         var rect = d3.select(this); // this refers to the colored squared just clicked
-                //         var enabled = true; // set enabled true to default
-                //         var totalEnabled = d3.sum(dataArr.map(function (d) { // can't disable all options
-                //             return (d.enabled) ? 1 :
-                //                 0; // return 1 for each enabled entry. and summing it up
-                //         }))
+                        legendRectSize)
+                    .style('fill', color)
+                    .style('stroke', color);
 
-
-                //         if (rect.attr('class') === 'disabled') { // if class is disabled
-                //             rect.attr('class', ''); // remove class disabled
-                //         } else { // else
-                //             if (totalEnabled < 2) return; // if less than two labels are flagged, exit
-                //             rect.attr('class', 'disabled'); // otherwise flag the square disabled
-                //             enabled = false; // set enabled to false
-                //         }
-
-                //         pie.value(function (d) {
-                //             if (d.item === item) d.enabled =
-                //                 enabled; // if entry label matches legend label
-                //             // console.log(d)
-                //             return (d.enabled) ? d.value :
-                //                 0; // update enabled property and return count or 0 based on the entry's status
-                //         });
-
-                //         // cnt_ena = totalEnabled-1
-                //         // console.log( totalEnabled, cnt_ena)
-                //         // var title = "Selected " + trade[0].toUpperCase() + trade.slice(1, 10) + "s from " + state + " in " + year.substring(3);
-                //         // document.getElementById('regionTitle').innerHTML = title;
-                //         // g = g.data(pie(dataArr)); // update pie with new data
-
-                //         // console.log(data(pie(dataArr)));
-
-                //         g.transition() // transition of redrawn pie
-                //             .duration(750) // 
-                //             .attrTween('d', function (
-                //                 d) { // 'd' specifies the d attribute that we'll be animating
-                //                 var interpolate = d3.interpolate(this._current,
-                //                     d); // this = current path element
-                //                 this._current = interpolate(
-                //                     0); // interpolate between current value and the new value of 'd'
-                //                 return function (t) {
-                //                     return arc(interpolate(t));
-                //                 };
-                //             });
-
-                //         g.append("text")
-                //             .attr("transform", function(d) {return "translate(" + labelArc.centroid(d) + ")"; })
-                //             .attr("dy", ".5em")
-                //             .text( function (d) { // when mouse enters div  
-                //                 var total = d3.sum(dataArr.map(function (
-                //                     d
-                //                 ) { // calculate the total number of tickets in the dataset         
-                //                     return (d.enabled) ? d.value :
-                //                         0; // checking to see if the entry is enabled. if it isn't, we return 0 and cause other percentages to increase                                      
-                //                 }));
-                //                 var percent = Math.round(1000 * d.data.value / total) / 10; // calculate percent
-                //                 console.log(percent+"%");
-                //                 return percent+"%"; // set percent calculated above          
-                // });
-                // });
-
-
-                // adding text to legend
                 legend.append('text')
                     .attr('x', legendRectSize + legendSpacing)
                     .attr('y', legendRectSize - legendSpacing)
                     .text(function (d) {
-                        // console.log(d.substring(0,5)+"...")
                         let str = d.substring(0, 18) + "...";
                         return str.charAt(0) + str.substring(1).toLowerCase()
-                        // return d.substring(0, 18) + "...";
-
-                    }); // return label
 
 
-                // document.getElementById('regionTitle').innerHTML = title;
+                    });
+
+
+
 
 
             })
@@ -866,14 +763,14 @@
                                 .style("opacity",
                                     0);
 
-                            tooltip.append('div') // add divs to the tooltip defined above
+                            tooltip.append('div')
                                 .attr('class', 'state');
 
-                            tooltip.append('div') // add divs to the tooltip defined above
+                            tooltip.append('div')
                                 .attr('class', 'trade');
-                            tooltip.append('div') // add divs to the tooltip defined above
+                            tooltip.append('div')
                                 .attr('class', 'year');
-                            tooltip.append('div') // add divs to the tooltip defined above
+                            tooltip.append('div')
                                 .attr('class', 'value');
                             var bars = svg.selectAll(".bar")
                                 .data(dataArr1)
@@ -895,7 +792,7 @@
                                 .on("mousemove", function (d) {
                                     tooltip
                                         .style("left", d3.event.pageX - 50 + "px")
-                                        .style("top", d3.event.pageY - 70 + "px")
+                                        .style("top", d3.event.pageY - 80 + "px")
                                         .style("display", "inline-block")
                                         .style('opacity', 1)
                                         .html((state) + "<br>" + (trade) + "<br>" + (d.year) +
